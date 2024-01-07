@@ -3,7 +3,7 @@
 ## Rationale
 One of the most significant impediments to profiting off of staking is taxes.  In the United States approximately 45% of all profits from staking must be paid back as taxes.  Reducing this percentage is the most important factor in increasing profitability - even moreso than commission.  
 
-It is possible to reduce taxes paid by changing the structure of how profits are collected.  While current NO income is considered ordinary income (and subject to the ~45% taxes), "income" from rETH is taxed at 15% because it is considered capital gains rather than ordinary income.  Changing the structure to classify NO income as capital gains will significantly increase profits, particularly in the long term (untaxed gains can compound).
+It is possible to reduce taxes paid by changing the structure of how profits are collected.  While current NO income is considered ordinary income (and subject to the ~45% taxes), "income" from rETH is taxed at 15% (when held >1 year) because it is considered long-term capital gains rather than ordinary income.  Changing the structure to classify NO income as capital gains will significantly increase profits, particularly in the long term (untaxed gains can compound).
 
 If we compare two LEB8s both at 14% commission where one is taxed at the capital gains rate and the other ordinary income, their ending capital should they exit and pay all taxes would look like the following:
 
@@ -17,7 +17,7 @@ Note that this includes partial-restaking (a person with a large amount of valid
 
 ## Value-Accruing with Current RPL Tokenomics
 
-The easiest method of creating a value-accruing token is to apply the rETH methodology to node operators.  When a node operator creates a minipool, they are given an Operator ETH token (oETH) which is not transferable and can be redeemed at a future date.  **All** rewards from the operation of this minipool are sent to a sETH pool (Socialized ETH).  Upon exiting the minipool all ETH is also sent to the pool, any penalties (if applicable) are assessed, and the oETH token is automatically burned, yielding ETH which is sent to the operator.  
+The easiest method of creating a value-accruing token is to apply the rETH methodology to node operators.  When a node operator creates a minipool, they are given an Operator ETH token (oETH) which is not transferable and can be redeemed at a future date.  **All** rewards from the operation of this minipool are sent to a sETH pool (Socialized ETH).  Upon exiting the minipool the NOs portion of the ETH is also sent to the pool, any penalties (if applicable) are assessed, and the oETH token is automatically burned, yielding ETH which is sent to the operator.  
 
 Just as with rETH, the amount of oETH initially received and the amount of ETH yielded upon burning varies with time as the exchange rate changes.  The only taxable event occurs when the minipool is exited.
 
