@@ -1,4 +1,4 @@
-# RP Tokenomics Change: Value-Accruing Tokens for NOs
+# Value-Accruing Tokens for NOs
 
 ## Rationale
 One of the most significant impediments to profiting off of staking is taxes.  In the United States approximately 45% of all profits from staking must be paid back as taxes.  Reducing this percentage is the most important factor in increasing profitability - even moreso than commission.  
@@ -50,7 +50,6 @@ The value-accruing rent-extraction model works by allowing for the staking of RP
 ### Possible Issues
 
 There is a good chance that this may not qualify as a capital gains tax.  I need to do more reading.
-
 
 ## Discarded Implementations
 
