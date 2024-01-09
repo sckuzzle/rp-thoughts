@@ -13,6 +13,8 @@ The difference is entirely attributable to reduced taxes paid using the long-ter
 
 Note that this includes partial-restaking (a person with a large amount of validators can spin up new validators with the rewards).  
 
+Lastly, while this is highlighting how much more NOs could make, it is not intended to say that all benefits yielded with this mechanic should go to NOs.  Instead, value-accruing tokens should be implemented AND other knobs, such as the commission rate, should be lowered.  We want this change to benefit across Rocketpool, and NOs do not necessarily need all of the pie.  A self-balancing mechanism, such as PIDs, should be considered to keep rewards balanced across all rocketpool needs.
+
 
 
 ## Value-Accruing with Current RPL Tokenomics
@@ -37,7 +39,27 @@ It is important that the oETH is immediately burned for ETH upon exiting a valid
 
 ## Value-Accruing with RPL-rent
 
-NOTE: DUBIOUS TAX STATUS
+In order to allow for the expansion of Rocketpool through the creation of no-RPL-minipools, it is being considered to use RPL as a rent-extracting token.  Under such a system, no RPL is required to spin up a minipool, and the NOs get to keep a smaller commission.  The NOs scheme could either use the value-accruing scheme as above or it can use the current RP dynamics.
+
+As above, a portion of staking rewards goes to the sETH pool - but this time, it's smaller (current estimates suggest around 3%).  The remaining commission (~11%) would go a different pool held in reserve for RPL stakers: eETH.
+
+When RPL is staked (and using whatever dynamics are decided on from other's proposals), a sRPL token is provided (non-transferable).  As time goes on, the ratio of sRPL provided per RPL decreases for new people staking RPL.  
+
+The eETH pool would be used to periodically buy the sRPL token and burn it.  This would allow the sRPL token value to appreciate with time, classifying the income as capital gains.  The rate exchange rate of buying back the sRPL would also be used in the paragraph above for new stakers exchanging RPL for sRPL.  
+
+![schematic](./sRPL-burn.png)
+
+### Possible Issues
+
+Might need a mechanism to unstake sRPL back into RPL.  This would require new RPL to be minted as the exchange rate changes.  
+
+Would need to do some modeling on the exchange rate and how steady it would be. We'd probably want some mechanism for the market to self-correct sRPL rates.
+
+## Discarded Implementations
+
+### Value-Accruing with RPL-rent
+
+NOTE: DUBIOUS TAX STATUS, replaced by RPL-burn
 
 In order to allow for the expansion of Rocketpool through the creation of no-RPL-minipools, it is being considered to use RPL as a rent-extracting token.  Under such a system, no RPL is required to spin up a minipool, and the NOs get to keep a smaller commission.  The NOs scheme could either use the value-accruing scheme as above or it can use the current RP dynamics.
 
@@ -47,11 +69,9 @@ The value-accruing rent-extraction model works by allowing for the staking of RP
 
 ![schematic](./no-rpl-schematic.png)
 
-### Possible Issues
+#### Possible Issues
 
 There is a good chance that this may not qualify as a capital gains tax.  I need to do more reading.
-
-## Discarded Implementations
 
 ### Individualized Income
 
