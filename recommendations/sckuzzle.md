@@ -91,6 +91,8 @@ The most important thing to notice here is that we have several proposals which 
 
 With the lower bond curves, we also increase the potential losses due to theft.  Epi's unsmoothing fee eliminates this theft in a way that is fair to small stakers.  The two proposals complement each other nicely.
 
+Lastly, Epi's unsmoothing fee makes income to the distributor more consistent over time, allowing UVC to use this assumption.  Without it it would be very difficult or impossible to implement UVC.
+
 ## Transition Phase
 
 The combination of ETH-only pools and lower bond requirements has the potential to shift RocketPool from a nETH-limited protocol to pETH-limited, at least in the short term.  It would be most fair to ensure that NOs that have been with RocketPool already and have RPL staked are able to create minipools before ETH-only pools.  Therefor, there should be a 1-2 month long ramp-down phase where RPL bond requirements are steadily reduced, giving NOs with the largest amount of excess RPL staked first dibs on pETH in the deposit pool.  It could look something like
