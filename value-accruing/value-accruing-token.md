@@ -13,6 +13,9 @@ The difference is entirely attributable to reduced taxes paid using the long-ter
 
 Note that this includes partial-restaking (a person with a large amount of validators can spin up new validators with the rewards).  
 
+A few items worth noting:
+- Not every NO will benefit the same amount from this.  It will vary depending on tax rates and local laws.
+- 
 Lastly, while this is highlighting how much more NOs could make, it is not intended to say that all benefits yielded with this mechanic should go to NOs.  Instead, value-accruing tokens should be implemented AND other knobs, such as the commission rate, should be lowered.  We want this change to benefit across Rocketpool, and NOs do not necessarily need all of the pie.  A self-balancing mechanism, such as PIDs, should be considered to keep rewards balanced across all rocketpool needs.
 
 
