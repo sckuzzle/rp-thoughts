@@ -104,6 +104,8 @@ The combination of ETH-only pools and lower bond requirements has the potential 
 | 40 | 8% |
 | etc. | ... |
 
+Note: Epineph achieves the same effect through [queue priority](https://dao.rocketpool.net/t/2024-tokenomics-rework-drafts/2847/38?u=sckuzzle), which is probably easier to implement.  
+
 ### Alternate Intermediary
 
 In addition to the time gate as above, it the intermediary phase could also include a DP-fullness gate.  The next-lower tier of percent borrowed would not open up until the deposit pool had at least 3000 ETH in it.  Gates would be forwards-only (once a gate is unlocked, it stays unlocked). 
