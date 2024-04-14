@@ -114,16 +114,12 @@ def simple_example():
             title = 'MEV Theft Comparison',
             )
   
-def example_with_drag():
-  satellite_eth = 1.5
+def example_with_drag(initial_eth = [4, 4], satellite_eth = 1.5):
   
-  #samus
-  # initial_eth = [4, 4, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 0.5, 0]
   
   #Default.  ETH bond required per minipool will follow this list, then continue at satellite_eth for additional minipools
-  initial_eth = [4, 4]
-  pools_to_graph = 50
-  NO_commission = 0.025
+  pools_to_graph = 100
+  NO_commission = 0.04
   protocol_cut = 0.14 - NO_commission #Used for calculated how much drag there is on the protocol
   
   # Construct lists of nETH and commission for each minipool
@@ -162,4 +158,11 @@ def example_with_drag():
   
 
 if __name__ == '__main__':
-  example_with_drag()
+  #samus
+  # initial_eth = [4, 4, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 0.5, 0]
+  
+  #Default.  ETH bond required per minipool will follow this list, then continue at satellite_eth for additional minipools
+  initial_eth = [4, 4]
+  
+  
+  example_with_drag(initial_eth = initial_eth, satellite_eth = 1.5)
