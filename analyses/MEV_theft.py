@@ -119,7 +119,7 @@ def example_with_drag(initial_eth = [4, 4], satellite_eth = 1.5):
   
   #Default.  ETH bond required per minipool will follow this list, then continue at satellite_eth for additional minipools
   pools_to_graph = 100
-  NO_commission = 0.04
+  NO_commission = 0.025
   protocol_cut = 0.14 - NO_commission #Used for calculated how much drag there is on the protocol
   
   # Construct lists of nETH and commission for each minipool
@@ -162,7 +162,7 @@ if __name__ == '__main__':
   # initial_eth = [4, 4, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 0.5, 0]
   
   #Default.  ETH bond required per minipool will follow this list, then continue at satellite_eth for additional minipools
-  initial_eth = [4, 4]
+  initial_eth = [4.2, 2.6, 2.4, 2.2, 2.1, 2, 1.9]
   
   
   example_with_drag(initial_eth = initial_eth, satellite_eth = 1.5)
