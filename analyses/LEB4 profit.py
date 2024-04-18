@@ -13,10 +13,6 @@ import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 
-import pdb
-
-
-
 df = pd.read_csv(r'./staking_snapshot.csv')
 
 rpl_selection = 'staked_rpl_value_in_eth' #could change to 'liquid_rpl_node_value_in_eth' if desired
