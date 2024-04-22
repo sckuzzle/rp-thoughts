@@ -22,7 +22,25 @@ solo_apr = 0.04
 voter_share = 0.05
 LEB8_comm = 0.14
 NO_comm = 0.035
-ETH_only_pools = 10000  #How many ETH-only pools join the protocol
+ETH_only_pools = 30000  #How many ETH-only pools join the protocol
+
+
+#Graph settings
+# draft_template = go.layout.Template()
+# draft_template.layout.annotations = [
+#     dict(
+#         name="draft watermark",
+#         text="DRAFT",
+#         textangle=-30,
+#         opacity=0.1,
+#         font=dict(color="black", size=100),
+#         xref="paper",
+#         yref="paper",
+#         x=0,
+#         y=0,
+#         showarrow=False,
+#     )
+# ]
 
 
 def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earnings for Reducing', x_title = 'Percent Borrowed', y_title = 'Earnings relative to LEB8', renderer = 'png'):
@@ -30,7 +48,7 @@ def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earning
   fig = go.Figure()
   for legend, y in y_data.items():
     fig.add_trace(go.Scatter(x=x_data, y=np.array(y),
-                        mode='markers',
+                        mode='lines',
                         name=legend))
     
   if drag_line is not None:
@@ -43,7 +61,9 @@ def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earning
     
   fig.update_layout(title=title,
                    xaxis_title=x_title,
-                   yaxis_title=y_title)
+                   yaxis_title=y_title,
+                   template = None,
+                   xaxis = {'range':[0, 1+max(x_data)]})
   fig.show(renderer = renderer, width = 800, height = 600, scale = 2)
   
 percent_borrowed_list = []
@@ -53,7 +73,7 @@ percent_reduced = []
 total_minipools = df['nETH'].sum() / 8  # Convert everyone to LEB8 since we are comparing reducing further
   # (df['nETH'].sum()+df['pETH'].sum())/32
 
-for percent_borrowed in range(1, 25):
+for percent_borrowed in np.arange(0, 15, 0.1):
   minipools_reduced = 0
   total_eligible_RPL = 0
 
@@ -76,5 +96,5 @@ for percent_borrowed in range(1, 25):
   percent_reduced.append(minipools_reduced / total_minipools)
 
   
-plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive})
-plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
+plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Earnings with {ETH_only_pools} ETH-only pools')
+# plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
