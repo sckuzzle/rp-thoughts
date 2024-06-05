@@ -1,5 +1,3 @@
-[LEB4](./LEB4%20profit.py)
-
 # LEB4 Profitability
 
 ## Table of Contents
