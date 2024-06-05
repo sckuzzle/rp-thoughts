@@ -51,22 +51,22 @@ We analyze profitability for various nodes with [this python script](./LEB4%20pr
 Ultimately, a 3.5% node commission and 5% voter share was deemed enough to encourage people to reduce.  While the final profitability is impacted by the amount of ETH-only pools joining the network, a conservative estimate of 10k pools means that everyone with at least 4% borrowed should reduce.  As more ETH-only pools join, this only gets better - with everyone with at least 3% borrowed incentived to reduce at 30k.  Additionally, LEB4 represents the worst case scenario; there is more incentive to reduce if the node is able to run LEB1.5 (the node has at least 8 ETH).
 
 
-<img src="LEB_0.png" alt="LEB0" width="500"/>
-<img src="LEB_10000.png" alt="LEB10000" width="500"/>
-<img src="LEB_30000.png" alt="LEB30000" width="500"/>
-<img src="reduced_fraction.png" alt="fraction" width="500"/>
+<img src="LEB_0.png" alt="LEB0" width="600"/>
+<img src="LEB_10000.png" alt="LEB10000" width="600"/>
+<img src="LEB_30000.png" alt="LEB30000" width="600"/>
+<img src="reduced_fraction.png" alt="fraction" width="600"/>
 
 ### Changing Inputs
 
 If we change `NO_commission`, we can increase or decrease profitability while causing RPL value to change inversely.  Here are the results of changing the commission. 
 
-<img src="5_commission.png" alt="LEB0" width="500"/>
-<img src="2_commission.png" alt="LEB0" width="500"/>
+<img src="5_commission.png" alt="LEB0" width="600"/>
+<img src="2_commission.png" alt="LEB0" width="600"/>
 
 Similarly, we could change the voter share.  Here are the results.  
 
-<img src="3_voter.png" alt="LEB0" width="500"/>
-<img src="7_voter.png" alt="LEB0" width="500"/>
+<img src="3_voter.png" alt="LEB0" width="600"/>
+<img src="7_voter.png" alt="LEB0" width="600"/>
 
 ## Equations
 
