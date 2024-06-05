@@ -22,7 +22,7 @@ solo_apr = 0.04
 voter_share = 0.05
 LEB8_comm = 0.14
 NO_comm = 0.035
-ETH_only_pools = 30000  #How many ETH-only pools join the protocol
+ETH_only_pools = 0  #How many ETH-only pools join the protocol
 
 
 #Graph settings
@@ -73,7 +73,7 @@ percent_reduced = []
 total_minipools = df['nETH'].sum() / 8  # Convert everyone to LEB8 since we are comparing reducing further
   # (df['nETH'].sum()+df['pETH'].sum())/32
 
-for percent_borrowed in np.arange(0, 15, 0.1):
+for percent_borrowed in np.arange(30, 50, 0.1):
   minipools_reduced = 0
   total_eligible_RPL = 0
 
@@ -96,5 +96,5 @@ for percent_borrowed in np.arange(0, 15, 0.1):
   percent_reduced.append(minipools_reduced / total_minipools)
 
   
-plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Earnings with {ETH_only_pools} ETH-only pools')
-# plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
+# plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Earnings with {ETH_only_pools} ETH-only pools')
+plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
