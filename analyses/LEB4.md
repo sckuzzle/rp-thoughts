@@ -4,11 +4,12 @@
 
 ## Table of Contents
 1. [Summary](#summary)
-2. [How the Variables were Chosen](#howthevariableswerechosen)
-    * [Results](#results)
-    * [Equations](#equations)
-3. [Background](#background)
-4. [Background](#background)
+2. [Goals and Constraints](#goals-and-constraints)
+3. [Results](#results)
+    * [Changing Inputs](#changing-inputs)
+4. [Equations](#equations)
+5. [Assumptions](#assumptions)
+6. [Should I Reduce?](#tldr)
 
 
 
@@ -45,7 +46,7 @@ We want to incentivize as many current minipools (LEB8) as possible to reduce wh
 
 We analyze profitability for various nodes with [this python script](./LEB4%20profit.py) that spits out the relative income at LEB4 compared to LEB8 as a function of the percent borrowed RPL.
 
-### Results
+## Results
 
 Ultimately, a 3.5% node commission and 5% voter share was deemed enough to encourage people to reduce.  While the final profitability is impacted by the amount of ETH-only pools joining the network, a conservative estimate of 10k pools means that everyone with at least 4% borrowed should reduce.  As more ETH-only pools join, this only gets better - with everyone with at least 3% borrowed incentived to reduce at 30k.  Additionally, LEB4 represents the worst case scenario; there is more incentive to reduce if the node is able to run LEB1.5 (the node has at least 8 ETH).
 
@@ -55,17 +56,26 @@ Ultimately, a 3.5% node commission and 5% voter share was deemed enough to encou
 <img src="LEB_30000.png" alt="LEB30000" width="500"/>
 <img src="reduced_fraction.png" alt="fraction" width="500"/>
 
+### Changing Inputs
 
+If we change `NO_commission`, we can increase or decrease profitability while causing RPL value to change inversely.  Here are the results of changing the commission. 
 
+<img src="5_commission.png" alt="LEB0" width="500"/>
+<img src="2_commission.png" alt="LEB0" width="500"/>
 
-### Equations
+Similarly, we could change the voter share.  Here are the results.  
+
+<img src="3_voter.png" alt="LEB0" width="500"/>
+<img src="7_voter.png" alt="LEB0" width="500"/>
+
+## Equations
 
 $LEB8~profitability = 1.42* solo~apr \\
 LEB4~ profitability = \frac{NO~commission * 28 + 4}{4} * solo~apr + \frac{min(\%~borrowed, 150)}{total~LEB4~effective~RPL~staked}*ETH_{voter~share} \\
 ETH_{voter~share} = 28*LEB4~minipools * voter~share * solo~apr$
 
 
-### Assumptions
+## Assumptions
 
 Network snapshot last run on June 4th, 2024
 
