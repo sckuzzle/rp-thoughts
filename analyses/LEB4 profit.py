@@ -19,10 +19,10 @@ rpl_selection = 'staked_rpl_value_in_eth' #could change to 'liquid_rpl_node_valu
 solo_apr = 0.04
 
 # SETTINGS
-voter_share = 0.07
+voter_share = 0.05
 LEB8_comm = 0.14
 NO_comm = 0.035
-ETH_only_pools = 10000  #How many ETH-only pools join the protocol
+ETH_only_pools = 0  #How many ETH-only pools join the protocol
 
 
 #Graph settings
@@ -43,7 +43,7 @@ ETH_only_pools = 10000  #How many ETH-only pools join the protocol
 # ]
 
 
-def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earnings for Reducing', x_title = 'Percent Borrowed', y_title = 'Earnings relative to LEB8', renderer = 'png'):
+def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earnings for Reducing', x_title = 'Percent Borrowed', y_title = 'Bonus Earnings relative to LEB8', renderer = 'png'):
   """Plotting function using plotly."""
   fig = go.Figure()
   for legend, y in y_data.items():
@@ -96,5 +96,5 @@ for percent_borrowed in np.arange(0, 15, 0.05):
   percent_reduced.append(minipools_reduced / total_minipools)
 
   
-plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Earnings with {ETH_only_pools} ETH-only pools at 7% voter share')
+plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Bonus Earnings with {ETH_only_pools} ETH-only pools')
 # plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')

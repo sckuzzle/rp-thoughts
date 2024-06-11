@@ -1,7 +1,7 @@
 # LEB4 Profitability
 
 ## Table of Contents
-1. [Summary](#summary)
+1. [Abstract](#abstrac)
 2. [Goals and Constraints](#goals-and-constraints)
 3. [Results](#results)
     * [Changing Inputs](#changing-inputs)
@@ -11,7 +11,7 @@
 
 
 
-## Summary
+## Abstract
 With the addition of LEB4, ETH-only pools are possible (no RPL stake is required to spin up minipools) and Node Operator commission is being reduced.  RPL stakers also receive a revenue share from all LEB4s based on their staked RPL in megapools - making how profitable running a LEB4 is (as compared to LEB8) a function of your percent borrowed RPL. 
 
 This document is an analysis on how profitable it is to reduce and how the default values for `NO_commission` and `voter_share` were chosen. 
@@ -68,9 +68,12 @@ Similarly, we could change the voter share.  Here are the results.
 
 ## Equations
 
-$LEB8~profitability = 1.42* solo~apr \\
-LEB4~ profitability = \frac{NO~commission * 28 + 4}{4} * solo~apr + \frac{min(\%~borrowed, 150)}{total~LEB4~effective~RPL~staked}*ETH_{voter~share} \\
-ETH_{voter~share} = 28*LEB4~minipools * voter~share * solo~apr$
+$$
+\begin{align}
+LEB8~profitability &= 1.42* solo~apr \\
+LEB4~ profitability &= \frac{NO~commission * 28 + 4}{4} * solo~apr + \frac{min(\%~borrowed, 150)}{total~LEB4~effective~RPL~staked}*ETH_{voter~share} \\
+ETH_{voter~share} &= 28*LEB4~minipools * voter~share * solo~apr
+\end{align}$$
 
 
 ## Assumptions
@@ -95,3 +98,4 @@ If you only look at one graph to understand how your earnings would change with 
 The y-axis is earnings relative to LEB8, with 1 being on par.  Profitability surpasses LEB8 at 5% borrowed, giving everyone above 4% an incentive to reduce.
 
 This assumes that `NO_commission` is set to 3.5%, `voter_share` 5%, 10,000 ETH-only pools join, and everyone with *more* percent RPL borrowed than you also reduces.
+
