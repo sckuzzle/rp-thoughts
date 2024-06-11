@@ -71,7 +71,7 @@ Similarly, we could change the voter share.  Here are the results.
 $$
 \begin{align}
 LEB8~profitability &= 1.42* solo~apr \\
-LEB4~ profitability &= \frac{NO~commission * 28 + 4}{4} * solo~apr + \frac{min(\%~borrowed, 150)}{total~LEB4~effective~RPL~staked}*ETH_{voter~share} \\
+LEB4~ profitability &= \frac{NO~commission * 28 + 4}{4} * solo~apr + \frac{min(percent~borrowed, 150)}{total~LEB4~effective~RPL~staked}*ETH_{voter~share} \\
 ETH_{voter~share} &= 28*LEB4~minipools * voter~share * solo~apr
 \end{align}$$
 
