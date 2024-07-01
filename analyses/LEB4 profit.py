@@ -97,4 +97,4 @@ for percent_borrowed in np.arange(0, 15, 0.05):
 
   
 plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Bonus Earnings with {ETH_only_pools} ETH-only pools')
-# plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
+plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
