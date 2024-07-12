@@ -31,6 +31,9 @@ def create_snapshot_csv():
   staked_rpl_value_in_eth_ls = []
   liquid_rpl_node_ls = []
   liquid_rpl_with_ls = []
+  vote_power_ls = []
+  rpl_stake_ls = []
+  latest_block = CLIENT.eth.block_number
   
   for offset in range(0, num_nodes, 100):
       print(offset)
@@ -43,9 +46,11 @@ def create_snapshot_csv():
           with_addr_ls.append(with_addr)
           provided_eth_ls.append(RocketNodeStaking.functions.getNodeETHProvided(addr).call())
           matched_eth_ls.append(RocketNodeStaking.functions.getNodeETHMatched(addr).call())
+          vote_power_ls.append(int(RocketNetworkVoting.functions.getVotingPower(addr, latest_block).call()))
           rpl_stake = RocketNodeStaking.functions.getNodeRPLStake(addr).call()
           rpl_node = RocketTokenRPL.functions.balanceOf(addr).call()
           rpl_with = RocketTokenRPL.functions.balanceOf(with_addr).call()
+          rpl_stake_ls.append(rpl_stake)
           staked_rpl_value_in_eth_ls.append(rpl_stake * rpl_price_in_eth)
           liquid_rpl_node_ls.append(rpl_node * rpl_price_in_eth)
           liquid_rpl_with_ls.append(rpl_with * rpl_price_in_eth)
@@ -53,17 +58,21 @@ def create_snapshot_csv():
   df = pd.DataFrame({
       'address': addr_ls,
       'withdrawal_address': with_addr_ls,
+      'staked_rpl': rpl_stake_ls,
       'staked_rpl_value_in_eth': staked_rpl_value_in_eth_ls,
       'nETH': provided_eth_ls,
       'pETH': matched_eth_ls,
       'liquid_rpl_node_value_in_eth': liquid_rpl_node_ls,
       'liquid_rpl_withdrawal_value_in_eth': liquid_rpl_with_ls,
+      'vote_power': vote_power_ls,
   })
   df['staked_rpl_value_in_eth'] /= 1e18
   df['nETH'] /= 1e18
   df['pETH'] /= 1e18
   df['liquid_rpl_node_value_in_eth'] /= 1e18
+  df['staked_rpl'] /= 1e18
   df['liquid_rpl_withdrawal_value_in_eth'] /= 1e18
+  df['vote_power'] /= 1e18
   df.to_csv('staking_snapshot.csv')
 
   
@@ -73,6 +82,12 @@ if __name__=='__main__':
   
   CLIENT = Web3(Web3.HTTPProvider(f'http://{NODE_IP}:8545'))
   
+  RocketNetworkVoting =  CLIENT.eth.contract(
+    address=Web3.toChecksumAddress("0xA9d27E1952f742d659143a544d3e535fFf3Eebe1"),
+      abi=
+      '[{"inputs":[{"internalType":"contract RocketStorageInterface","name":"_rocketStorageAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"nodeOperator","type":"address"},{"indexed":false,"internalType":"address","name":"delegate","type":"address"},{"indexed":false,"internalType":"uint256","name":"time","type":"uint256"}],"name":"DelegateSet","type":"event"},{"inputs":[{"internalType":"address","name":"_nodeAddress","type":"address"}],"name":"getCurrentDelegate","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_nodeAddress","type":"address"},{"internalType":"uint32","name":"_block","type":"uint32"}],"name":"getDelegate","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"_block","type":"uint32"}],"name":"getNodeCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_nodeAddress","type":"address"}],"name":"getVotingInitialised","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_nodeAddress","type":"address"},{"internalType":"uint32","name":"_block","type":"uint32"}],"name":"getVotingPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"initialiseVoting","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_delegate","type":"address"}],"name":"initialiseVotingWithDelegate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newDelegate","type":"address"}],"name":"setDelegate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"}]'
+      )
+    
   RocketStorage = CLIENT.eth.contract(
       address=Web3.toChecksumAddress("0x1d8f8f00cfa6758d7bE78336684788Fb0ee0Fa46"), #rocketstorage
       abi=
