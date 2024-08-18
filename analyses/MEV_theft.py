@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 import numpy as np
 
 #globals
-solo_apr = 0.04
+solo_apr = 0.035
 
 
 def plot_data(x_data, y_data:dict, drag_line = None, title = None, x_title = 'Node ETH', y_title = 'Profitability (APR)', renderer = 'png'):
@@ -118,8 +118,8 @@ def example_with_drag(initial_eth = [4, 4], satellite_eth = 1.5):
   
   
   #Default.  ETH bond required per minipool will follow this list, then continue at satellite_eth for additional minipools
-  pools_to_graph = 100
-  NO_commission = 0.035
+  pools_to_graph = 50
+  NO_commission = 0.05
   protocol_cut = 0.14 - NO_commission #Used for calculated how much drag there is on the protocol
   
   # Construct lists of nETH and commission for each minipool
@@ -148,7 +148,7 @@ def example_with_drag(initial_eth = [4, 4], satellite_eth = 1.5):
             {'Honest APR':honest_apr,
              'APR with Theft': total_dishonest_apr},
             title = 'MEV Theft Comparison',
-            drag_line = [total_nETH[max_theft_index], drag_lower, max_theft_apr],
+            # drag_line = [total_nETH[max_theft_index], drag_lower, max_theft_apr],
             )
   
   print(f'rETH Drag: {rETH_drag*100}% or Protocol Drag:{protocol_drag*100}%')
