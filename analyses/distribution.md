@@ -53,11 +53,13 @@ Zooming in, we find that ~2-5% of NOs are full exiting each period and around 6%
 
 ## Correlations 
 While there is a correlation between price change and staked RPL or number of minipools, it is hard to account for other factors like sentiment and market context.
+
 <img src="images/rpl_correlation.png" alt="flow" width="600"/>
 <img src="images/minipool_correlation.png" alt="flow" width="600"/>
 
 ## Weighted by Node Size (pETH)
 For completeness, here is weighting by pETH.
+
 <img src="images/large_peth.png" alt="large_peth" width="600"/>
 <img src="images/small_peth.png" alt="small_peth" width="600"/>
 
