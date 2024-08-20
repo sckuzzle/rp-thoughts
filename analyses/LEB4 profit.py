@@ -16,7 +16,7 @@ import pandas as pd
 df = pd.read_csv(r'./staking_snapshot.csv')
 
 solo_apr = 0.04
-RPL_ratio = 0.004577535
+RPL_ratio = 0.004341191
 
 # SETTINGS
 voter_share = 0.02

@@ -35,14 +35,21 @@ def get_prices_df():
   df = pd.read_csv(f'{directory}prices.csv')
   return df
 
-
+def gini_coefficient(x):
+    """Compute Gini coefficient of array of values"""
+    diffsum = 0
+    for i, xi in enumerate(x[:-1], 1):
+        diffsum += np.sum(np.abs(xi - x[i:]))
+    return diffsum / (len(x)**2 * np.mean(x))
 
 def process_data(weight_strategy = 'Node'):
   df = get_snapshot_df()
   prices = get_prices_df()
   
-  columns = ['num_safe', 'num_safe_topped', 'num_topped', 'num_full_exit', 'num_exit_buy', 'num_exit_safe', 'num_stake_existing', 'num_dead', 'num_died', 'num_other', 'num_growing', 'inflow', 'outflow', 'minipools']
+  columns = ['num_safe', 'num_safe_topped', 'num_topped', 'num_full_exit', 'num_exit_buy', 'num_exit_safe', 'num_stake_existing', 'num_dead', 'num_died', 'num_other', 'num_growing', 'inflow', 'outflow', 'minipools', "gini"]
   results = pd.DataFrame(columns = columns)
+  full_exit_dist = []
+  non_exit_dist = []
   for interval in range(10, 26):
     # start_block = intervals[interval-1]
     # end_block = intervals[interval]
@@ -63,6 +70,7 @@ def process_data(weight_strategy = 'Node'):
     eff_rpl = 0
     total_staked = 0
     minipools = 0
+    gini_array = []
     
     start_ratio = prices.loc[interval-1, 'ratio']
     end_ratio = prices.loc[interval, 'ratio']
@@ -91,6 +99,8 @@ def process_data(weight_strategy = 'Node'):
         continue
       if start['nETH'] == 0 and end['nETH'] == 0:
         continue
+      if end['pETH'] != 0:
+        gini_array.append(end['staked_RPL']/end['pETH'])
       
       address = start['address'].lower()
       # with_address = start['withdrawal_address'].lower()
@@ -113,6 +123,7 @@ def process_data(weight_strategy = 'Node'):
       required_rpl_at_end = 0.1* end['pETH']/end_ratio
       
       if address in rewards_data and int(rewards_data[address]['collateralRpl']):
+        non_exit_dist.append(start['staked_RPL']/start['pETH']*start_ratio)
         eff_rpl += end['staked_RPL']
         if start['staked_RPL'] >= required_rpl_at_end:
           if end['staked_RPL'] == start['staked_RPL'] or end['staked_RPL'] == start['staked_RPL']+rewards_received:
@@ -130,7 +141,7 @@ def process_data(weight_strategy = 'Node'):
               num_other +=weighting
               # pdb.set_trace()
           elif end['nETH'] == start['nETH']:
-            if total_end_rpl > total_start_rpl:
+            if total_end_rpl - total_start_rpl - rewards_received > 1:
               num_topped += weighting
             else:
               num_stake_existing +=weighting
@@ -140,28 +151,33 @@ def process_data(weight_strategy = 'Node'):
       else:
         if end['nETH'] == 0 and start['nETH']:
           num_full_exit +=weighting
+          full_exit_dist.append(start['staked_RPL']/start['pETH']*start_ratio)
         else:
+          non_exit_dist.append(start['staked_RPL']/start['pETH']*start_ratio)
           if start['staked_RPL']*start_ratio >= 0.1 * start['pETH']:
             num_died += weighting
           else:
             num_dead +=weighting
     fraction_eff = eff_rpl / total_staked
+    gini = gini_coefficient(gini_array)
     # print(f'{interval=} {fraction_eff=}')
     total_counted = num_safe+num_safe_topped+num_topped+num_full_exit+num_exit_buy+num_exit_safe+num_stake_existing+num_dead+num_died+num_other+num_growing        
-    results.loc[interval] = [num_safe/total_counted, num_safe_topped/total_counted, num_topped/total_counted, num_full_exit/total_counted, num_exit_buy/total_counted, num_exit_safe/total_counted, num_stake_existing/total_counted, num_dead/total_counted, num_died/total_counted, num_other/total_counted, num_growing/total_counted, staked_rpl_inflow, staked_rpl_outflow, minipools]
-  
+    results.loc[interval] = [num_safe/total_counted, num_safe_topped/total_counted, num_topped/total_counted, num_full_exit/total_counted, num_exit_buy/total_counted, num_exit_safe/total_counted, num_stake_existing/total_counted, num_dead/total_counted, num_died/total_counted, num_other/total_counted, num_growing/total_counted, staked_rpl_inflow, staked_rpl_outflow, minipools, gini]
+    
+  # plot_distribution(full_exit_dist, non_exit_dist)
+
   return results
-              
-    #number of NOs that increased validators
-    #number of NOs that exited validators
-    #number of NOs that increased RPL
-    #number of NOs that decreased RPL
-    #percent of NOs over 10%
-    # percent that topped off to stay above
-    # percent that were already above
-    # percent that didn't top off
-    # percent that exited to stay above
-    # percent that exited and bought to stay above
+
+def plot_distribution(exit_distribution, non_exit_distribution):
+    exit_buckets = np.histogram(exit_distribution, bins=40, range=(0, 0.2))
+    non_exit_buckets = np.histogram(non_exit_distribution, bins=40, range=(0, 0.2))
+    
+    plot_data(exit_buckets[1], {'hist':exit_buckets[0]/non_exit_buckets[0]}, title = 'Rate of Full Exit by % Borrowed', 
+              x_title = '% Borrowed', y_title = 'Rate per Period', x_unit = 'pct', y_unit = 'pct')
+    
+    results = np.histogram(exit_distribution, bins=40, range=(0, 0.2))
+    plot_data(results[1], {'hist':results[0]}, title = '% Borrowed at Previous Period for Full Exiting Nodes', 
+              x_title = '% Borrowed', y_title = 'Count', graph_type = 'bar', x_unit = 'pct', y_unit = '')
 
 def graph_results(results, weight_strategy = 'Node'):
   plot_data(results.index, {
@@ -188,6 +204,9 @@ def graph_results(results, weight_strategy = 'Node'):
                             'Other':results['num_other'].to_numpy(),
                             }, 
             title = f'Distribution weighted by {weight_strategy}', x_title = 'Interval', y_title = 'Fraction')
+  
+  plot_data(results.index, {'gini':results['gini'].to_numpy()},
+            title = 'Staked RPL Inequality Over Time', x_title = 'Interval', y_title = 'Gini Coefficient', y_unit = '')
 
 def graph_flows_and_prices(results):
   plot_data(results.index, {
@@ -206,11 +225,11 @@ def graph_flows_and_prices(results):
     results.loc[i+1, 'minipool_flow'] = results.loc[i+1, 'minipools'] - results.loc[i, 'minipools']
   prices = prices.loc[10:]
   
-  # create trend lines
-  bestfit = stats.linregress(prices['change'], results['net_flow'])
-  results['rpl_flow_trendline'] = prices['change'] * bestfit[0] + bestfit[1]
-  bestfit = stats.linregress(prices['change'], results['minipool_flow'])
-  results['minipool_flow_trendline'] = prices['change'] * bestfit[0] + bestfit[1]
+  # # create trend lines
+  # bestfit = stats.linregress(prices['change'], results['net_flow'])
+  # results['rpl_flow_trendline'] = prices['change'] * bestfit[0] + bestfit[1]
+  # bestfit = stats.linregress(prices['change'], results['minipool_flow'])
+  # results['minipool_flow_trendline'] = prices['change'] * bestfit[0] + bestfit[1]
   
   
   
@@ -219,16 +238,16 @@ def graph_flows_and_prices(results):
   plot_data(prices.index, {'Change in Ratio':prices['change'].to_numpy()},
             title = 'Price Change by Interval', x_title = 'Interval', y_title = 'Change', y_unit = 'pct')  
   
-  plot_data(prices['change'], {'correlation':results['net_flow'], 'trendline':results['rpl_flow_trendline']}, 
+  plot_data(prices['change'], {'correlation':results['net_flow']}, 
             x_title = 'Percent Change in RPL Ratio', y_title = 'Net Flow (RPL)', title = 'RPL Flows vs Ratio Change', 
-            graph_type = 'markers', x_unit = 'pct', y_unit = '')
-  plot_data(prices['change'], {'correlation':results['minipool_flow'], 'trendline':results['minipool_flow_trendline']}, 
+            graph_type = 'markers+text', x_unit = 'pct', y_unit = '', text = list(prices.index))
+  plot_data(prices['change'], {'correlation':results['minipool_flow']}, 
             x_title = 'Percent Change in RPL Ratio', y_title = 'Change in Minipools', title = 'Minipool Flows vs Ratio Change', 
-            graph_type = 'markers', x_unit = 'pct', y_unit = '')
+            graph_type = 'markers+text', x_unit = 'pct', y_unit = '', text = list(prices.index))
   
   
     
-def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earnings for Reducing', x_title = 'Percent Borrowed', y_title = 'Bonus Earnings relative to LEB8', renderer = 'png', graph_type = 'line', y_unit = 'pct', x_unit = ''):
+def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earnings for Reducing', x_title = 'Percent Borrowed', y_title = 'Bonus Earnings relative to LEB8', renderer = 'png', graph_type = 'line', y_unit = 'pct', x_unit = '', text = None):
   """Plotting function using plotly."""
   fig = go.Figure()
   if y_unit == 'pct':
@@ -247,6 +266,7 @@ def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earning
     if graph_type == 'line':
       fig.add_trace(go.Scatter(x=x_data*x_mult, y=np.array(y)*y_mult,
                           mode='lines',
+                          text = text,
                           name=legend))
     elif graph_type == 'bar':
       fig.add_trace(go.Bar(x=x_data*x_mult, y=np.array(y)*y_mult,
@@ -254,6 +274,13 @@ def plot_data(x_data, y_data:dict, drag_line = None, title = 'Worst Case Earning
     elif graph_type == 'markers':
       fig.add_trace(go.Scatter(x=x_data*x_mult, y=np.array(y)*y_mult,
                           mode='markers',
+                          text = text,
+                          name=legend))
+    elif graph_type == 'markers+text':
+      fig.add_trace(go.Scatter(x=x_data*x_mult, y=np.array(y)*y_mult,
+                          mode='markers+text',
+                          text = text,
+                          textposition = 'bottom center',
                           name=legend))
     else:
       raise TypeError
