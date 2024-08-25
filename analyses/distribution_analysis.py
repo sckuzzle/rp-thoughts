@@ -46,10 +46,11 @@ def process_data(weight_strategy = 'Node'):
   df = get_snapshot_df()
   prices = get_prices_df()
   
-  columns = ['num_safe', 'num_safe_topped', 'num_topped', 'num_full_exit', 'num_exit_buy', 'num_exit_safe', 'num_stake_existing', 'num_dead', 'num_died', 'num_other', 'num_growing', 'inflow', 'outflow', 'minipools', "gini"]
+  columns = ['num_safe', 'num_safe_topped', 'num_topped', 'num_full_exit', 'num_exit_buy', 'num_exit_safe', 'num_stake_existing', 'num_dead', 'num_died', 'num_other', 'num_growing', 'inflow', 'outflow', 'minipools', "gini", "capital_efficiency"]
   results = pd.DataFrame(columns = columns)
   full_exit_dist = []
   non_exit_dist = []
+  exit_size = []
   for interval in range(10, 26):
     # start_block = intervals[interval-1]
     # end_block = intervals[interval]
@@ -69,8 +70,10 @@ def process_data(weight_strategy = 'Node'):
     staked_rpl_outflow = 0
     eff_rpl = 0
     total_staked = 0
-    minipools = 0
+    total_nETH = 0
+    total_pETH = 0
     gini_array = []
+    capital_efficiency = []
     
     start_ratio = prices.loc[interval-1, 'ratio']
     end_ratio = prices.loc[interval, 'ratio']
@@ -80,7 +83,8 @@ def process_data(weight_strategy = 'Node'):
     for node_index in range(len(df.loc[interval-1])):
       end = df.loc[interval, node_index]
       total_staked += end['staked_RPL']
-      minipools += (end['nETH']+end['pETH'])/32
+      
+
       start = df.loc[interval-1, node_index]
       
       if weight_strategy == 'Node':
@@ -101,6 +105,9 @@ def process_data(weight_strategy = 'Node'):
         continue
       if end['pETH'] != 0:
         gini_array.append(end['staked_RPL']/end['pETH'])
+        capital_efficiency.append(end['nETH']/end['pETH'])
+        total_nETH += end['nETH']
+        total_pETH += end['pETH']
       
       address = start['address'].lower()
       # with_address = start['withdrawal_address'].lower()
@@ -152,6 +159,7 @@ def process_data(weight_strategy = 'Node'):
         if end['nETH'] == 0 and start['nETH']:
           num_full_exit +=weighting
           full_exit_dist.append(start['staked_RPL']/start['pETH']*start_ratio)
+          exit_size.append((start['staked_RPL']/start['pETH']*start_ratio, start['pETH']))
         else:
           non_exit_dist.append(start['staked_RPL']/start['pETH']*start_ratio)
           if start['staked_RPL']*start_ratio >= 0.1 * start['pETH']:
@@ -160,14 +168,20 @@ def process_data(weight_strategy = 'Node'):
             num_dead +=weighting
     fraction_eff = eff_rpl / total_staked
     gini = gini_coefficient(gini_array)
+    minipools = (total_nETH + total_pETH) / 32
+    average_capital_efficiency = total_nETH / minipools / 32
+    # average_capital_efficiency = sum(capital_efficiency)/len(capital_efficiency)
     # print(f'{interval=} {fraction_eff=}')
     total_counted = num_safe+num_safe_topped+num_topped+num_full_exit+num_exit_buy+num_exit_safe+num_stake_existing+num_dead+num_died+num_other+num_growing        
-    results.loc[interval] = [num_safe/total_counted, num_safe_topped/total_counted, num_topped/total_counted, num_full_exit/total_counted, num_exit_buy/total_counted, num_exit_safe/total_counted, num_stake_existing/total_counted, num_dead/total_counted, num_died/total_counted, num_other/total_counted, num_growing/total_counted, staked_rpl_inflow, staked_rpl_outflow, minipools, gini]
+    results.loc[interval] = [num_safe/total_counted, num_safe_topped/total_counted, num_topped/total_counted, num_full_exit/total_counted, num_exit_buy/total_counted, num_exit_safe/total_counted, num_stake_existing/total_counted, num_dead/total_counted, num_died/total_counted, num_other/total_counted, num_growing/total_counted, staked_rpl_inflow, staked_rpl_outflow, minipools, gini, average_capital_efficiency]
     
-  # plot_distribution(full_exit_dist, non_exit_dist)
+  # plot_exits(exit_size)
+  plot_distribution(full_exit_dist, non_exit_dist)
 
   return results
 
+# def plot_exits(exit_size):
+  
 def plot_distribution(exit_distribution, non_exit_distribution):
     exit_buckets = np.histogram(exit_distribution, bins=40, range=(0, 0.2))
     non_exit_buckets = np.histogram(non_exit_distribution, bins=40, range=(0, 0.2))
@@ -181,7 +195,7 @@ def plot_distribution(exit_distribution, non_exit_distribution):
 
 def graph_results(results, weight_strategy = 'Node'):
   plot_data(results.index, {
-                            "Didn't need to Top Up":results['num_safe'].to_numpy(),
+                            # "Didn't need to Top Up":results['num_safe'].to_numpy(),
                             'Topped up Anyway': results['num_safe_topped'].to_numpy(),
                             'Topped Up': results['num_topped'].to_numpy(),
                             # 'exited and bought':results['num_exit_buy'].to_numpy(),
@@ -207,6 +221,8 @@ def graph_results(results, weight_strategy = 'Node'):
   
   plot_data(results.index, {'gini':results['gini'].to_numpy()},
             title = 'Staked RPL Inequality Over Time', x_title = 'Interval', y_title = 'Gini Coefficient', y_unit = '')
+  plot_data(results.index, {'cap_eff':results['capital_efficiency'].to_numpy()},
+            title = 'Average Node ETH Fraction', x_title = 'Interval', y_title = 'Percent nETH', y_unit = '')
 
 def graph_flows_and_prices(results):
   plot_data(results.index, {
