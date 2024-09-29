@@ -135,3 +135,17 @@ for node in df.iterrows():
     addresses.append((node['address'], node['staked_rpl_value_in_eth'] / (3*node['nETH'])))
 print(addresses)
     
+def saturn_pools():
+  pETH = 0
+  saturn1 = 0
+  for node in df.iterrows():
+    node = node[1]
+    if node['nETH'] <=8:
+      pETH += node['nETH']/4*28
+    else:
+      pETH += 56 + (node['nETH']-8)/1.5*30.5
+    saturn1+= node['nETH']/4*28
+  print(f'{pETH=}')
+  print(f'{saturn1=}')
+  
+saturn_pools()

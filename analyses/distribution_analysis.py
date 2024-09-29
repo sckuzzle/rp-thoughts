@@ -15,7 +15,7 @@ from scipy import stats
 
 directory = r'../../rp-snapshot/snapshot/'
 
-intervals = [15451165, 15637542, 15839520, 16038366, 16238906, 16439406, 16639856, 16841781, 17037278, 17235705, 17434106, 17633377, 17832789, 18032731, 18232825, 18432450, 18632502, 18832296, 19031794, 19231376, 19431307, 19631250, 19830533, 20030845, 20231194, 20431741]
+intervals = [15451165, 15637542, 15839520, 16038366, 16238906, 16439406, 16639856, 16841781, 17037278, 17235705, 17434106, 17633377, 17832789, 18032731, 18232825, 18432450, 18632502, 18832296, 19031794, 19231376, 19431307, 19631250, 19830533, 20030845, 20231194, 20431741, 20632306, 20832848]
 
 
 def get_snapshot_df():
@@ -27,9 +27,12 @@ def get_snapshot_df():
       frames.append(pd.read_csv(f'{directory}{block_id}.csv'))
       valid_intervals.append(i)
   df = pd.concat(frames, keys = valid_intervals)
+  df = df.rename({'Unnamed: 0': 'node_id'}, axis = 1)
     
 
   return df
+
+
 
 def get_prices_df():
   df = pd.read_csv(f'{directory}prices.csv')
@@ -41,17 +44,32 @@ def gini_coefficient(x):
     for i, xi in enumerate(x[:-1], 1):
         diffsum += np.sum(np.abs(xi - x[i:]))
     return diffsum / (len(x)**2 * np.mean(x))
+  
+def get_atlas_operators():
+  """NOs that have been active since Atlas.  Returns list of addresses."""
+  df = get_snapshot_df()
+  total_operators = pd.read_csv(f'{directory}/index.csv')
+  last_interval = df.index[-1][0]
+  mask = (df.loc[last_interval, 'nETH']>0) & (df.loc[last_interval, 'node_id']<= len(df.loc[9]))
+  operators_of_interest = total_operators[mask]
+  
+  return operators_of_interest, mask
 
 def process_data(weight_strategy = 'Node'):
   df = get_snapshot_df()
   prices = get_prices_df()
+  atlas_operators, atlas_mask = get_atlas_operators()
   
-  columns = ['num_safe', 'num_safe_topped', 'num_topped', 'num_full_exit', 'num_exit_buy', 'num_exit_safe', 'num_stake_existing', 'num_dead', 'num_died', 'num_other', 'num_growing', 'inflow', 'outflow', 'minipools', "gini", "capital_efficiency"]
+  columns = ['num_safe', 'num_safe_topped', 'num_topped', 'num_full_exit', 'num_exit_buy', 'num_exit_safe', 'num_stake_existing', 'num_dead', 'num_died', 'num_other', 'num_growing', 'inflow', 'outflow', 'minipools', "gini", "capital_efficiency", 'atlas_stakers_rpl_change', 'new_stakers_rpl']
   results = pd.DataFrame(columns = columns)
   full_exit_dist = []
   non_exit_dist = []
   exit_size = []
-  for interval in range(10, 26):
+  
+  already_staked_by_atlas = df.loc[9, 'staked_RPL'][atlas_mask].sum()
+  other_nodes_rpl = df.loc[9, 'staked_RPL'][-atlas_mask].sum()
+  
+  for interval in range(10, 28):
     # start_block = intervals[interval-1]
     # end_block = intervals[interval]
     
@@ -172,8 +190,10 @@ def process_data(weight_strategy = 'Node'):
     average_capital_efficiency = total_nETH / minipools / 32
     # average_capital_efficiency = sum(capital_efficiency)/len(capital_efficiency)
     # print(f'{interval=} {fraction_eff=}')
-    total_counted = num_safe+num_safe_topped+num_topped+num_full_exit+num_exit_buy+num_exit_safe+num_stake_existing+num_dead+num_died+num_other+num_growing        
-    results.loc[interval] = [num_safe/total_counted, num_safe_topped/total_counted, num_topped/total_counted, num_full_exit/total_counted, num_exit_buy/total_counted, num_exit_safe/total_counted, num_stake_existing/total_counted, num_dead/total_counted, num_died/total_counted, num_other/total_counted, num_growing/total_counted, staked_rpl_inflow, staked_rpl_outflow, minipools, gini, average_capital_efficiency]
+    total_counted = num_safe+num_safe_topped+num_topped+num_full_exit+num_exit_buy+num_exit_safe+num_stake_existing+num_dead+num_died+num_other+num_growing   
+    atlas_stakers_rpl_change = df.loc[interval, 'staked_RPL'][atlas_mask].sum() - already_staked_by_atlas
+    new_stakers_rpl = df.loc[interval, 'staked_RPL'][-atlas_mask].sum() - other_nodes_rpl
+    results.loc[interval] = [num_safe/total_counted, num_safe_topped/total_counted, num_topped/total_counted, num_full_exit/total_counted, num_exit_buy/total_counted, num_exit_safe/total_counted, num_stake_existing/total_counted, num_dead/total_counted, num_died/total_counted, num_other/total_counted, num_growing/total_counted, staked_rpl_inflow, staked_rpl_outflow, minipools, gini, average_capital_efficiency, atlas_stakers_rpl_change, new_stakers_rpl]
     
   # plot_exits(exit_size)
   plot_distribution(full_exit_dist, non_exit_dist)
@@ -195,7 +215,7 @@ def plot_distribution(exit_distribution, non_exit_distribution):
 
 def graph_results(results, weight_strategy = 'Node'):
   plot_data(results.index, {
-                            # "Didn't need to Top Up":results['num_safe'].to_numpy(),
+                            "Didn't need to Top Up":results['num_safe'].to_numpy(),
                             'Topped up Anyway': results['num_safe_topped'].to_numpy(),
                             'Topped Up': results['num_topped'].to_numpy(),
                             # 'exited and bought':results['num_exit_buy'].to_numpy(),
@@ -223,6 +243,8 @@ def graph_results(results, weight_strategy = 'Node'):
             title = 'Staked RPL Inequality Over Time', x_title = 'Interval', y_title = 'Gini Coefficient', y_unit = '')
   plot_data(results.index, {'cap_eff':results['capital_efficiency'].to_numpy()},
             title = 'Average Node ETH Fraction', x_title = 'Interval', y_title = 'Percent nETH', y_unit = '')
+  plot_data(results.index, {'Atlas Stakers Change in RPL': results['atlas_stakers_rpl_change'], 'New Node Staking':results['new_stakers_rpl']}, 
+            title = 'RPL Staking by by Atlas Nodes', x_title = 'Interval', y_title = 'Staked RPL Change', y_unit = '')
 
 def graph_flows_and_prices(results):
   plot_data(results.index, {
@@ -321,8 +343,12 @@ def open_rewards(interval):
 if __name__ == '__main__':
   # df = get_snapshot_df()
   # prices = get_prices_df()
+  
   for weight_strategy in ['Node', 'Staked RPL', 'nETH', 'pETH']:
     results = process_data(weight_strategy = weight_strategy)
     graph_results(results, weight_strategy = weight_strategy)
-  graph_flows_and_prices(results)
-
+  # graph_flows_and_prices(results)
+  
+  # results = process_data()
+  # graph_results(results)
+  

@@ -1,10 +1,10 @@
-[MEV Script](./distribution_analysis.py)
+
 
 # Distribution Analysis
-sckuzzle
+By sckuzzle.
 
 # Context
-When coming up with tokenomics changes arguments are often made on how node operators would change in their behavior under the proposed system.  If we want to make arguments like this, we should really know what the current node operator behavior is and has been historically.  This analysis breaks down behavior into the following buckets and looks how they change over time: 
+When coming up with tokenomics changes arguments are often made on how node operators would change in their behavior under the proposed system.  If we want to make arguments like this, we should really know what the current node operator behavior is and has been historically.  This analysis breaks down behavior into the following buckets and looks at how they change over time: 
 
 * Nodes that didn't need to top up 
 * Nodes that didn't need to but did anyway
@@ -19,7 +19,9 @@ When coming up with tokenomics changes arguments are often made on how node oper
 
 It also looks at how this distribution changes when you weight by nodes vs staked RPL vs node size (nETH and pETH).
 
-It builds off of work I did to create historical staking snapshots for each interval [here](https://github.com/sckuzzle/rp-snapshot).
+It builds off of work I did to create historical staking snapshots for each interval [here](https://github.com/sckuzzle/rp-snapshot).  The script used to generate the graphs can be found [here](./distribution_analysis.py).
+
+Note: the graphs have been updated for intervals 26 and 27 but the analysis has not.  
 
 ## Prices
 

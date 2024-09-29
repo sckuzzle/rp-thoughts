@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Script to compare the benefits of staying at LEB8 or reducing to LEB4.
+Value of switching to eth-only LEB8s based on RPL
 
-Uses the RPL staking state in staking_snapshot (currently 17 April).
-
-Assumes the worst case scenario i.e everyone with more RPL than you reduces and everyone with less doesn't
 """
 
 import random
@@ -15,8 +12,8 @@ import pandas as pd
 
 df = pd.read_csv(r'./staking_snapshot.csv')
 
-solo_apr = 0.04
-RPL_ratio = 0.0044
+solo_apr = 0.035
+RPL_ratio = 0.0048
 
 # SETTINGS
 voter_share = 0.02
@@ -101,13 +98,14 @@ for percent_borrowed in np.arange(0, 15, 0.25):
   
   legacy_RPL_rate = (burn_ETH_per_RPL-ETH_loss_from_inflation) / RPL_ratio
   legacy_comm = 1.42*solo_apr
-  reward_per_percent_borrowed = ETH_per_RPL/RPL_ratio *24/100
+  # reward_per_percent_borrowed = ETH_per_RPL/RPL_ratio *24/100
+  reward_per_percent_borrowed = legacy_RPL_rate/RPL_ratio *24/100
   reward_if_reduced = 56 * solo_apr * NO_comm + reward_per_percent_borrowed * percent_borrowed
   reduced_incentive.append(reward_if_reduced / reward_if_stay)
   percent_borrowed_list.append(percent_borrowed)
   percent_reduced.append(minipools_reduced / total_minipools)
 
 print(total_eligible_RPL)
-plot_data(percent_borrowed_list, {'RPL APR': RPL_APR}, title = 'APR on RPL staked with {ETH_only_pools} ETH-only pools', y_title = 'APR')
+plot_data(percent_borrowed_list, {'RPL APR': RPL_APR}, title = f'APR on RPL staked with {ETH_only_pools} ETH-only pools', y_title = 'APR')
 plot_data(percent_borrowed_list, {'Reduced Rewards':reduced_incentive}, title = f'Relative Bonus Earnings with {ETH_only_pools} ETH-only pools')
 plot_data(percent_borrowed_list, {'Fraction Reduced':percent_reduced}, title = 'Minipool Fraction Reduced at Percent', y_title = 'Fraction of Pools')
