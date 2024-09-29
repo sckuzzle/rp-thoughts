@@ -347,7 +347,7 @@ if __name__ == '__main__':
   for weight_strategy in ['Node', 'Staked RPL', 'nETH', 'pETH']:
     results = process_data(weight_strategy = weight_strategy)
     graph_results(results, weight_strategy = weight_strategy)
-  # graph_flows_and_prices(results)
+  graph_flows_and_prices(results)
   
   # results = process_data()
   # graph_results(results)

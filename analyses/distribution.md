@@ -1,6 +1,6 @@
 
 
-# Distribution Analysis
+# Node Operator Behavior Trends
 By sckuzzle.
 
 # Context
@@ -19,7 +19,7 @@ When coming up with tokenomics changes arguments are often made on how node oper
 
 It also looks at how this distribution changes when you weight by nodes vs staked RPL vs node size (nETH and pETH).
 
-It builds off of work I did to create historical staking snapshots for each interval [here](https://github.com/sckuzzle/rp-snapshot).  The script used to generate the graphs can be found [here](./distribution_analysis.py).
+It builds off of work I did to create historical staking snapshots for each interval [here](https://github.com/sckuzzle/rp-snapshot).  The script used to generate the graphs can be found [here](./distribution_analysis.py).  A discord thread discussing results and additional findings can be found [here](https://discord.com/channels/405159462932971535/1274603641948475465).
 
 Note: the graphs have been updated for intervals 26 and 27 but the analysis has not.  
 
@@ -58,6 +58,10 @@ While there is a correlation between price change and staked RPL or number of mi
 
 <img src="images/rpl_correlation.png" alt="flow" width="600"/>
 <img src="images/minipool_correlation.png" alt="flow" width="600"/>
+
+We can also look at the rates that node operators exit by their percent borrowed during the previous interval.  There is a noticeable uptrend directly under 10%, which returns to normal (and even below) the farther from 10% a NO sinks.  
+
+<img src="images/rate_of_exit.png" alt="flow" width="600"/>
 
 ## Weighted by Node Size (pETH)
 For completeness, here is weighting by pETH.
